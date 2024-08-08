@@ -53,55 +53,84 @@ function hslToRgb(h, s, l) {
 
   return [Math.round(r * 255), Math.round(g * 255), Math.round(b * 255)];
 }
+function generateColors({ option = {}, color }) {
+  const { format = "css", output = "hex" } = option;
+  let result = format === "array" ? {} : "";
 
-function generateColors(colorObject) {
-  let allCssVariables = "";
-
-  for (const [colorName, hexColor] of Object.entries(colorObject)) {
-    // Convert hex to RGB
+  for (const [colorName, hexColor] of Object.entries(color)) {
     const hex = hexColor.replace("#", "");
     const r = parseInt(hex.substr(0, 2), 16);
     const g = parseInt(hex.substr(2, 2), 16);
     const b = parseInt(hex.substr(4, 2), 16);
-
-    // Calculate HSL values
     const hsl = rgbToHsl(r, g, b);
-
-    // Generate shades
     const steps = [50, 100, 200, 300, 400, 500, 600, 700, 800, 900, 950];
-
-    // Check if the color is neutral (low saturation)
     const isNeutral = hsl[1] < 10;
 
-    steps.forEach((step, index) => {
-      let h = hsl[0],
-        s = hsl[1],
-        l = hsl[2];
+    if (format === "array") {
+      result[colorName] = [];
+    }
 
+    steps.forEach((step, index) => {
+      let [h, s, l] = hsl;
       if (index < 5) {
-        // Lighter shades
         l = Math.min(98, l + (98 - l) * ((5 - index) / 4.5));
-        // Neutral color / low saturation
         if (!isNeutral) {
           s = Math.max(10, s - s * ((5 - index) / 10));
         }
       } else if (index > 5) {
-        // Darker shades
         l = l * (1 - (index - 5) / 6.5);
-        // Neutral color / low saturation
         if (!isNeutral) {
           s = Math.min(100, s + (100 - s) * ((index - 5) / 7));
         }
       }
 
-      // Create variable
-      const rgb = hslToRgb(h, s, l);
-      const hexColor = `#${rgb[0].toString(16).padStart(2, "0")}${rgb[1].toString(16).padStart(2, "0")}${rgb[2]
-        .toString(16)
-        .padStart(2, "0")}`;
-      allCssVariables += `--${colorName}-${step}: ${hexColor};\n`;
+      let colorValue;
+      switch (output) {
+        case "hsl":
+          colorValue = `hsl(${Math.round(h)}, ${Math.round(s)}%, ${l.toFixed(1)}%)`;
+          break;
+        case "rgb":
+          const [r, g, b] = hslToRgb(h, s, l);
+          colorValue = `rgb(${r} ${g} ${b} / var(--opacity))`;
+          break;
+        case "hex":
+        default:
+          const rgb = hslToRgb(h, s, l);
+          colorValue = `#${rgb[0].toString(16).padStart(2, "0")}${rgb[1].toString(16).padStart(2, "0")}${rgb[2]
+            .toString(16)
+            .padStart(2, "0")}`;
+      }
+
+      switch (format) {
+        case "scss":
+          result += `$${colorName}-${step}: ${colorValue};\n`;
+          break;
+        case "object":
+          if (typeof result !== "object") result = {};
+          if (!result[colorName]) result[colorName] = {};
+          result[colorName][step] = colorValue;
+          break;
+        case "array":
+          result[colorName].push(colorValue);
+          break;
+        case "css":
+        default:
+          result += `--${colorName}-${step}: ${colorValue};\n`;
+      }
     });
   }
-
-  return allCssVariables;
+  return result;
 }
+
+// Usage
+// const colorShades = generateColors({
+//   option: {
+//     format: "array",
+//     output: "hex"
+//   },
+//   color: {
+//     primary: "#ccf654",
+//     secondary: "#e56de8"
+//   }
+// });
+// console.log(colorShades);
