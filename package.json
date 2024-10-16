@@ -1,0 +1,35 @@
+{
+  "name": "@nousantx/color-generator",
+  "version": "1.0.0",
+  "description": "Generate color shade easily.",
+  "author": "NOuSantx <nousantx@gmail.com>",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/nousantx/color-generator.git"
+  },
+  "type": "module",
+  "files": [
+    "dist",
+    "LICENSE",
+    "README.md",
+    "package.json"
+  ],
+  "types": "./dist/index.d.ts",
+  "main": "./dist/index.min.cjs",
+  "module": "./dist/index.esm.min.js",
+  "browser": "./dist/index.umd.min.js",
+  "scripts": {
+    "build": "rollup -c",
+    "dev": "rollup -c -w"
+  },
+  "devDependencies": {
+    "@rollup/plugin-commonjs": "^28.0.0",
+    "@rollup/plugin-node-resolve": "^15.3.0",
+    "@rollup/plugin-terser": "^0.4.4",
+    "@rollup/plugin-typescript": "^12.1.0",
+    "rollup": "^4.24.0",
+    "tslib": "^2.7.0",
+    "typescript": "^5.6.2"
+  }
+}

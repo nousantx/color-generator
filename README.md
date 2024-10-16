@@ -1,70 +1,99 @@
-# Color Shades Generator
+# Color Shade Generator
 
-This library provides functions to generate color shades from a base color. The generated shades can be output in various formats such as CSS variables, SCSS variables, JavaScript objects, or arrays. The colors can also be output in different formats like HEX, RGB, or HSL.
+Generate shades of color from a single hex color.
 
-## Function
+## Installation
 
-```javascript
-function generateColors({ option = {}, color }) {}
+```shell
+npm i @nousantx/color-generator
 ```
 
-Generates shades for a set of colors.
+## Usage
 
-**Parameters:**
-- `option` (object): Options for generating colors.
-  - `format` (string): The output format. Can be "css", "scss", "object", or "array". Default is "css".
-  - `output` (string): The color format. Can be "hex", "rgb", or "hsl". Default is "hex".
-- `color` (object): An object where keys are color names and values are base color HEX values.
+```javascript
+import { generateColors } from '@nousantx/color-generator'
 
-**Returns:**
-- Depending on the `format` option, it returns CSS variables, SCSS variables, a JavaScript object, or an array of color shades.
+const colorShades = generateColors({
+  option: {
+    format: 'object2',
+    output: 'hex'
+  },
+  color: {
+    primary: '#ccf654',
+    secondary: '#a55de7'
+  }
+})
+
+console.log(colorShades)
+```
+
+## API
+
+### `generateColors(options)`
+
+Generates color shades based on the provided options.
+
+#### Parameters
+
+- `options`: An object containing the following properties:
+  - `option`: An object with the following properties:
+    - `format`: The output format. Default is 'css'.
+    - `output`: The color format. Default is 'hex'.
+  - `color`: An object where keys are color names and values are base color HEX values.
+
+#### Returns
+
+Depending on the format option, it returns CSS variables, SCSS variables, a JavaScript object, or an array of color shades.
 
 ## Options
 
-### `option`
+### `option.format`
 
-- `format`: Specifies the format of the output.
-  - `"css"`: Outputs CSS variables.
-  - `"scss"`: Outputs SCSS variables.
-  - `"object"`: Outputs a JavaScript object.
-  - `"array"`: Outputs an array of colors.
-- `output`: Specifies the color format.
-  - `"hex"`: Outputs colors in HEX format.
-  - `"rgb"`: Outputs colors in RGB format.
-  - `"hsl"`: Outputs colors in HSL format.
+Specifies the output format of the generated color shades.
+
+- Type: `'css' | 'scss' | 'object' | 'object2' | 'array'`
+- Default: `'css'`
+
+#### Format Types:
+
+- `'css'`: Returns CSS custom properties (variables).
+- `'scss'`: Returns SCSS variables.
+- `'object'`: Returns a nested object with color names as keys and shade values as nested objects.
+- `'object2'`: Returns a flat object with color-shade combinations as keys.
+- `'array'`: Returns an object with color names as keys and arrays of shade values.
+
+### `option.output`
+
+Specifies the color format of the generated shades.
+
+- Type: `'hex' | 'rgb' | 'hsl'`
+- Default: `'hex'`
 
 ### `color`
 
-An object where each key is the name of the color and each value is the HEX value of the base color.
+An object where keys are color names and values are base color HEX values.
 
-## Usage Example
+- Type: `{ [colorName: string]: string }`
+
+## Example Output
 
 ```javascript
-const colorShades = generateColors({
-  option: {
-    format: "array", // Output format: "css", "scss", "object", or "array"
-    output: "hex"    // Color format: "hex", "rgb", or "hsl"
-  },
-  color: {
-    primary: "#ccf654",  // Base color for "primary"
-    secondary: "#e56de8" // Base color for "secondary"
-  }
-});
-
-console.log(colorShades);
-```
-
-### Example Output (Array Format)
-
-```json
+// With format: 'object2' and output: 'hex'
 {
-  "primary": [
-    "#fdfdfd", "#fdfdfd", "#fbfefb", "#f7fdf7", "#f2fcf2", "#ccf654",
-    "#4be344", "#1dd14e", "#0fb94e", "#088f4a", "#047a47"
-  ],
-  "secondary": [
-    "#fefcfe", "#fef8fe", "#fdebfc", "#fcd9f9", "#fac2f4", "#e56de8",
-    "#d62ac9", "#c31dad", "#a1198c", "#79156a", "#631353"
-  ]
+  'primary-50': '#f4fde6',
+  'primary-100': '#e8fccc',
+  // ... other primary shades
+  'secondary-50': '#f7f0fe',
+  'secondary-100': '#efe1fd',
+  // ... other secondary shades
 }
 ```
+
+## Notes
+
+- The generator creates 11 shades for each color (50, 100, 200, ..., 900, 950).
+- Ensure that the input HEX colors are valid 6-digit HEX codes (e.g., '#ccf654').
+
+## License
+
+MIT
