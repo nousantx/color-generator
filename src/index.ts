@@ -6,6 +6,8 @@ export type OutputFormat = 'css' | 'scss' | 'object' | 'object2' | 'array'
 export interface GenerateColorsOptions {
   format?: OutputFormat
   output?: ColorFormat
+  prefix?: string
+  opacityPrefix?: string
 }
 
 export interface ColorInput {
@@ -18,7 +20,7 @@ type ColorShades = {
   }
 }
 
-const STEPS = [50, 100, 200, 300, 400, 500, 600, 700, 800, 900, 950]
+const colorSteps = [50, 100, 200, 300, 400, 500, 600, 700, 800, 900, 950]
 
 function adjustShade(hsl: HSL, index: number, isNeutral: boolean): HSL {
   let [h, s, l] = hsl
@@ -36,14 +38,16 @@ function adjustShade(hsl: HSL, index: number, isNeutral: boolean): HSL {
   return [h, s, l]
 }
 
-function formatColor(hsl: HSL, format: ColorFormat): string {
+function formatColor(hsl: HSL, format: ColorFormat, opacityPrefix: string = ''): string {
   const [h, s, l] = hsl
+  const opacityVar = opacityPrefix ? ` / var(--${opacityPrefix}-opacity)` : ''
+
   switch (format) {
     case 'hsl':
-      return `hsl(${Math.round(h)}, ${Math.round(s)}%, ${l.toFixed(1)}%)`
+      return `hsl(${Math.round(h)} ${Math.round(s)}% ${l.toFixed(1)}%${opacityVar})`
     case 'rgb':
       const [r, g, b] = hslToRgb(h, s, l)
-      return `rgb(${r} ${g} ${b} / var(--opacity))`
+      return `rgb(${r} ${g} ${b}${opacityVar})`
     case 'hex':
     default:
       return rgbToHex(hslToRgb(h, s, l))
@@ -57,21 +61,25 @@ export function generateColors({
   option?: GenerateColorsOptions
   color: ColorInput
 }): string | ColorShades | string[] {
-  const { format = 'css', output = 'hex' } = option
+  const { format = 'css', output = 'hex', opacityPrefix = '', prefix='' } = option
   let result: any = format === 'array' ? {} : format === 'object' || format === 'object2' ? {} : ''
 
-  for (const [colorName, hexColor] of Object.entries(color)) {
+  for (let [colorName, hexColor] of Object.entries(color)) {
     const rgb = hexToRgb(hexColor)
     const hsl = rgbToHsl(...rgb)
     const isNeutral = hsl[1] < 10
+
+    if (prefix !== '') {
+      colorName = prefix + colorName
+    }
 
     if (format === 'array') {
       result[colorName] = []
     }
 
-    STEPS.forEach((step, index) => {
+    colorSteps.forEach((step, index) => {
       const adjustedHsl = adjustShade(hsl, index, isNeutral)
-      const colorValue = formatColor(adjustedHsl, output)
+      const colorValue = formatColor(adjustedHsl, output, opacityPrefix)
 
       switch (format) {
         case 'scss':
