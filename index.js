@@ -2,7 +2,7 @@ import { generateColors } from './dist/index.esm.min.js'
 
 const colorShades = generateColors({
   option: {
-    format: 'css',
+    format: 'object2',
     output: 'hex',
     prefix: 'tx_',
     // opacityPrefix: 'bg',

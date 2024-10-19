@@ -69,9 +69,10 @@ export function generateColors({
     prefix = '',
     reverse = false
   } = option
+
   let result: any = format === 'array' ? {} : format === 'object' || format === 'object2' ? {} : ''
 
-  const steps = reverse ? colorSteps.reverse() : colorSteps
+  const steps = reverse ? colorSteps.reverse() : colorSteps 
 
   for (let [colorName, hexColor] of Object.entries(color)) {
     const rgb = hexToRgb(hexColor)
@@ -104,6 +105,8 @@ export function generateColors({
           break
         case 'array':
           result[colorName].push(colorValue)
+          // reverse array value
+          if (reverse) result[colorName].reverse()
           break
         case 'css':
         default:
