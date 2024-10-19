@@ -6,6 +6,7 @@ export type OutputFormat = 'css' | 'scss' | 'object' | 'object2' | 'array'
 export interface GenerateColorsOptions {
   format?: OutputFormat
   output?: ColorFormat
+  reverse?: boolean
   prefix?: string
   opacityPrefix?: string
 }
@@ -61,8 +62,16 @@ export function generateColors({
   option?: GenerateColorsOptions
   color: ColorInput
 }): string | ColorShades | string[] {
-  const { format = 'css', output = 'hex', opacityPrefix = '', prefix='' } = option
+  const {
+    format = 'css',
+    output = 'hex',
+    opacityPrefix = '',
+    prefix = '',
+    reverse = false
+  } = option
   let result: any = format === 'array' ? {} : format === 'object' || format === 'object2' ? {} : ''
+
+  const steps = reverse ? colorSteps.reverse() : colorSteps
 
   for (let [colorName, hexColor] of Object.entries(color)) {
     const rgb = hexToRgb(hexColor)
@@ -77,7 +86,7 @@ export function generateColors({
       result[colorName] = []
     }
 
-    colorSteps.forEach((step, index) => {
+    steps.forEach((step, index) => {
       const adjustedHsl = adjustShade(hsl, index, isNeutral)
       const colorValue = formatColor(adjustedHsl, output, opacityPrefix)
 

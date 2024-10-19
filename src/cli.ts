@@ -13,6 +13,7 @@ interface CliOptions {
   prefix: string
   opacityPrefix: string
   colors: string
+  reverse: boolean
 }
 
 function parseArgs(args: string[]): CliOptions {
@@ -21,7 +22,8 @@ function parseArgs(args: string[]): CliOptions {
     output: 'hex',
     prefix: '',
     opacityPrefix: '',
-    colors: ''
+    colors: '',
+    reverse: false
   }
 
   for (let i = 2; i < args.length; i += 2) {
@@ -48,6 +50,11 @@ function parseArgs(args: string[]): CliOptions {
       case '--colors':
         options.colors = value
         break
+      case '-r':
+      case '--reverse':
+        options.reverse = true
+        i-- // doesn't need any value actually
+        break
       case '-h':
       case '--help':
         printHelp()
@@ -66,11 +73,12 @@ Options:
   -o, --output     Color format (hex, rgb, hsl) (default: "hex")
   -p, --prefix     Set custom prefix for color name (e.g. 'color-')
   -ox, --opacity-prefix     Opacity prefix (for \`rgb\` or \`hsl\` color format)
+  -r, --reverse     Reverse generated shades (i.e., 50 => 950, 100 => 900)
   -c, --colors     Colors in JavaScript object or JSON format
   -h, --help       Display this help message
 
 Example:
-  generate-color -c '{"primary":"#ccf654","secondary":"#a55de7"}'\n`)
+  generate-color -c '{"primary": "#ccf654", "secondary": "#a55de7"}'\n`)
 }
 
 function validateColors(colors: string): ColorInput {
@@ -98,7 +106,8 @@ try {
       format: options.format,
       output: options.output,
       prefix: options.prefix,
-      opacityPrefix: options.opacityPrefix
+      opacityPrefix: options.opacityPrefix,
+      reverse: options.reverse
     },
     color: colorInput
   })
