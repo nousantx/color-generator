@@ -1,6 +1,6 @@
 import { RGB, HSL, rgbToHsl, hslToRgb, hexToRgb, rgbToHex } from './lib/converter'
 
-export type ColorFormat = 'hex' | 'rgb' | 'hsl'
+export type ColorFormat = 'hex' | 'rgb' | 'rgb-only' | 'hsl'
 export type OutputFormat = 'css' | 'scss' | 'object' | 'object2' | 'array'
 
 export interface GenerateColorsOptions {
@@ -41,17 +41,19 @@ function adjustShade(hsl: HSL, index: number, isNeutral: boolean): HSL {
 
 function formatColor(hsl: HSL, format: ColorFormat, opacityPrefix: string = ''): string {
   const [h, s, l] = hsl
+  const rgb = hslToRgb(h, s, l)
   const opacityVar = opacityPrefix ? ` / var(--${opacityPrefix}-opacity)` : ''
 
   switch (format) {
     case 'hsl':
       return `hsl(${Math.round(h)} ${Math.round(s)}% ${l.toFixed(1)}%${opacityVar})`
     case 'rgb':
-      const [r, g, b] = hslToRgb(h, s, l)
-      return `rgb(${r} ${g} ${b}${opacityVar})`
+      return `rgb(${rgb[0]} ${rgb[1]} ${rgb[2]}${opacityVar})`
+    case 'rgb-only':
+      return `${rgb[0]} ${rgb[1]} ${rgb[2]}`
     case 'hex':
     default:
-      return rgbToHex(hslToRgb(h, s, l))
+      return rgbToHex(rgb)
   }
 }
 
@@ -69,28 +71,22 @@ export function generateColors({
     prefix = '',
     reverse = false
   } = option
-
   let result: any = format === 'array' ? {} : format === 'object' || format === 'object2' ? {} : ''
-
-  const steps = reverse ? colorSteps.reverse() : colorSteps 
+  const steps = reverse ? [...colorSteps].reverse() : colorSteps
 
   for (let [colorName, hexColor] of Object.entries(color)) {
     const rgb = hexToRgb(hexColor)
     const hsl = rgbToHsl(...rgb)
     const isNeutral = hsl[1] < 10
-
     if (prefix !== '') {
       colorName = prefix + colorName
     }
-
     if (format === 'array') {
       result[colorName] = []
     }
-
     steps.forEach((step, index) => {
       const adjustedHsl = adjustShade(hsl, index, isNeutral)
       const colorValue = formatColor(adjustedHsl, output, opacityPrefix)
-
       switch (format) {
         case 'scss':
           result += `$${colorName}-${step}: ${colorValue};\n`
@@ -105,16 +101,16 @@ export function generateColors({
           break
         case 'array':
           result[colorName].push(colorValue)
-          // reverse array value
-          if (reverse) result[colorName].reverse()
           break
         case 'css':
         default:
           result += `--${colorName}-${step}: ${colorValue};\n`
       }
     })
+    if (format === 'array' && reverse) {
+      result[colorName].reverse()
+    }
   }
-
   return result
 }
 

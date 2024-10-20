@@ -3,7 +3,7 @@ import { generateColors } from './dist/index.esm.min.js'
 const colorShades = generateColors({
   option: {
     format: 'object2',
-    output: 'hex',
+    output: 'rgb-only',
     prefix: 'tx_',
     // opacityPrefix: 'bg',
     reverse: true

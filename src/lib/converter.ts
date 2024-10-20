@@ -78,5 +78,4 @@ export function rgbToHex([r, g, b]: RGB): string {
     .padStart(2, '0')}`
 }
 
-export default {rgbToHex, rgbToHsl, hslToRgb, hexToRgb
-}
+export default { rgbToHex, rgbToHsl, hslToRgb, hexToRgb }
