@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.4.0
+
+## Added
+
+- `rgb-only` color format (output: `r g b` _ e.g. `255 0 0`)
+
 ## 1.2.0
 
 ### Added
@@ -9,4 +15,4 @@
 
 ## 1.1.0
 
--  `opacityPrefix` option, enabling opacity variable option to `rgb` and `hsl` color format.
+- `opacityPrefix` option, enabling opacity variable option to `rgb` and `hsl` color format.
