@@ -3,7 +3,7 @@ import resolve from '@rollup/plugin-node-resolve'
 import commonjs from '@rollup/plugin-commonjs'
 import terser from '@rollup/plugin-terser'
 
-const name = 'nousantx'
+const name = '__nsx_color_tools'
 
 const config = [
   {

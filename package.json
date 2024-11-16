@@ -1,6 +1,6 @@
 {
   "name": "@nousantx/color-generator",
-  "version": "1.4.0",
+  "version": "1.4.1",
   "description": "Generate color shade easily.",
   "author": "NOuSantx <nousantx@gmail.com>",
   "license": "ISC",
@@ -9,11 +9,7 @@
     "url": "git+https://github.com/nousantx/color-generator.git"
   },
   "type": "module",
-  "files": [
-    "dist",
-    "README.md",
-    "package.json"
-  ],
+  "files": ["dist", "README.md", "package.json"],
   "types": "./dist/index.d.ts",
   "main": "./dist/index.min.cjs",
   "module": "./dist/index.esm.min.js",
