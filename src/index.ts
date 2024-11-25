@@ -1,43 +1,23 @@
-import { RGB, HSL, rgbToHsl, hslToRgb, hexToRgb, rgbToHex } from './lib/converter'
-
-export type ColorFormat = 'hex' | 'rgb' | 'rgb-only' | 'hsl'
-export type OutputFormat = 'css' | 'scss' | 'object' | 'object2' | 'array'
-
-export interface GenerateColorsOptions {
-  format?: OutputFormat
-  output?: ColorFormat
-  reverse?: boolean
-  prefix?: string
-  opacityPrefix?: string
-}
-
-export interface ColorInput {
-  [colorName: string]: string
-}
-
-type ColorShades = {
-  [colorName: string]: {
-    [shade: number]: string
-  }
-}
-
-const colorSteps = [50, 100, 200, 300, 400, 500, 600, 700, 800, 900, 950]
-
-function adjustShade(hsl: HSL, index: number, isNeutral: boolean): HSL {
-  let [h, s, l] = hsl
-  if (index < 5) {
-    l = Math.min(98, l + (98 - l) * ((5 - index) / 4.5))
-    if (!isNeutral) {
-      s = Math.max(10, s - s * ((5 - index) / 10))
-    }
-  } else if (index > 5) {
-    l = l * (1 - (index - 5) / 6.5)
-    if (!isNeutral) {
-      s = Math.min(100, s + (100 - s) * ((index - 5) / 7))
-    }
-  }
-  return [h, s, l]
-}
+import {
+  rgbToHsl,
+  hslToRgb,
+  hexToRgb,
+  rgbToHex,
+  rgbToOklch,
+  rgbToHwb,
+  rgbToLab,
+  rgbToLch
+} from './lib/converter'
+import type {
+  RGB,
+  HSL,
+  ColorFormat,
+  OutputFormat,
+  ColorOptions,
+  ColorInput,
+  ColorShade
+} from './types'
+import { adjustShade } from './utils/adjust-shades'
 
 function formatColor(hsl: HSL, format: ColorFormat, opacityPrefix: string = ''): string {
   const [h, s, l] = hsl
@@ -45,12 +25,24 @@ function formatColor(hsl: HSL, format: ColorFormat, opacityPrefix: string = ''):
   const opacityVar = opacityPrefix ? ` / var(--${opacityPrefix}-opacity)` : ''
 
   switch (format) {
-    case 'hsl':
-      return `hsl(${Math.round(h)} ${Math.round(s)}% ${l.toFixed(1)}%${opacityVar})`
     case 'rgb':
       return `rgb(${rgb[0]} ${rgb[1]} ${rgb[2]}${opacityVar})`
     case 'rgb-only':
       return `${rgb[0]} ${rgb[1]} ${rgb[2]}`
+    case 'hsl':
+      return `hsl(${Math.round(h)} ${Math.round(s)}% ${l.toFixed(1)}%${opacityVar})`
+    case 'hwb':
+      const [hw, w, b] = rgbToHwb(...rgb)
+      return `hwb(${Math.round(hw)} ${Math.round(w)}% ${Math.round(b)}%${opacityVar})`
+    case 'lab':
+      const [L2, a, b2] = rgbToLab(...rgb)
+      return `lab(${L2.toFixed(1)}% ${a.toFixed(1)} ${b2.toFixed(1)}${opacityVar})`
+    case 'lch':
+      const [L3, C2, H2] = rgbToLch(...rgb)
+      return `lch(${L3.toFixed(1)}% ${C2.toFixed(1)} ${H2.toFixed(1)}${opacityVar})`
+    case 'oklch':
+      const [L, C, H] = rgbToOklch(...rgb)
+      return `oklch(${L.toFixed(1)}% ${C.toFixed(3)} ${H.toFixed(1)}${opacityVar})`
     case 'hex':
     default:
       return rgbToHex(rgb)
@@ -61,18 +53,30 @@ export function generateColors({
   option = {},
   color
 }: {
-  option?: GenerateColorsOptions
+  option?: ColorOptions
   color: ColorInput
-}): string | ColorShades | string[] {
+}): string | ColorShade | string[] {
   const {
     format = 'css',
     output = 'hex',
     opacityPrefix = '',
     prefix = '',
-    reverse = false
+    reverse = false,
+    lighterLightness = 4.5,
+    lighterSaturation = 10,
+    darkerLightness = 6.5,
+    darkerSaturation = 7
   } = option
-  let result: any = format === 'array' ? {} : format === 'object' || format === 'object2' ? {} : ''
+  const colorSteps = [50, 100, 200, 300, 400, 500, 600, 700, 800, 900, 950]
   const steps = reverse ? [...colorSteps].reverse() : colorSteps
+  let result: any =
+    format === 'array'
+      ? {}
+      : format === 'object' || format === 'object2'
+        ? {}
+        : format === 'tailwind'
+          ? { theme: { colors: {} } }
+          : ''
 
   for (let [colorName, hexColor] of Object.entries(color)) {
     const rgb = hexToRgb(hexColor)
@@ -85,11 +89,25 @@ export function generateColors({
       result[colorName] = []
     }
     steps.forEach((step, index) => {
-      const adjustedHsl = adjustShade(hsl, index, isNeutral)
+      const adjustedHsl = adjustShade(
+        hsl,
+        index,
+        isNeutral,
+        lighterLightness,
+        lighterSaturation,
+        darkerLightness,
+        darkerSaturation
+      )
       const colorValue = formatColor(adjustedHsl, output, opacityPrefix)
       switch (format) {
         case 'scss':
           result += `$${colorName}-${step}: ${colorValue};\n`
+          break
+        case 'tailwind':
+          if (!result.theme.colors[colorName]) {
+            result.theme.colors[colorName] = {}
+          }
+          result.theme.colors[colorName][step] = colorValue
           break
         case 'object':
           if (typeof result !== 'object') result = {}
@@ -115,3 +133,4 @@ export function generateColors({
 }
 
 export * from './lib/converter'
+export * from './types'
