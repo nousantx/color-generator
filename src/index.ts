@@ -134,3 +134,14 @@ export function generateColors({
 
 export * from './lib/converter'
 export * from './types'
+export default {
+  generateColors,
+  rgbToHsl,
+  hslToRgb,
+  hexToRgb,
+  rgbToHex,
+  rgbToOklch,
+  rgbToHwb,
+  rgbToLab,
+  rgbToLch
+}

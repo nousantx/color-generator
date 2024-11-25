@@ -3,7 +3,7 @@
   "version": "1.5.0",
   "description": "Generate color shade easily.",
   "author": "NOuSantx <nousantx@gmail.com>",
-  "license": "ISC",
+  "license": "MIT",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/nousantx/color-generator.git"
