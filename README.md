@@ -92,7 +92,7 @@ An object where keys are color names and values are base color HEX values.
 ## Notes
 
 - The generator creates 11 shades for each color (50, 100, 200, ..., 900, 950).
-- Ensure that the input HEX colors are valid 6-digit HEX codes (e.g., '#ccf654').
+- Ensure that the input HEX colors are valid 6-digit HEX codes which not too dark or too light (e.g., '#ccf654').
 
 ## License
 
