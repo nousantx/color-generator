@@ -1,17 +1,20 @@
 import { generateColors } from './dist/index.esm.min.js'
 
-const colorShades = generateColors({
+const HEX = generateColors({
   option: {
-    format: 'object2',
-    output: 'rgb-only',
-    prefix: 'tx_',
-    // opacityPrefix: 'bg',
-    reverse: true
+    format: 'css',
+    output: 'hex',
+    prefix: 'hex_'
   },
   color: {
     primary: '#ccf654',
-    secondary: '#a55de7'
+    slate: '#64748b',
+    sienna: '#882D17'
   }
 })
 
-console.log(colorShades)
+if (HEX.theme) {
+  console.log(HWB.theme.colors)
+} else {
+  console.log(HEX)
+}

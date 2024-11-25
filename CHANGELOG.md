@@ -1,10 +1,18 @@
 # Changelog
 
+## 1.5.0
+
+### Added
+
+- New color formats: `hwb`, `lab`, `lch`, `oklch`
+- New output formats: `tailwind`
+- New options: `lighterLightness`, `lighterSaturation`, `darkerLightness`, `darkerSaturation`
+
 ## 1.4.0
 
-## Added
+### Added
 
-- `rgb-only` color format (output: `r g b` _ e.g. `255 0 0`)
+- `rgb-only` color format (output: `r g b` \_ e.g. `255 0 0`)
 
 ## 1.2.0
 
