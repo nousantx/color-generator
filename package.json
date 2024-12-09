@@ -1,6 +1,6 @@
 {
   "name": "@nousantx/color-generator",
-  "version": "1.5.0",
+  "version": "1.5.1",
   "description": "Generate color shade easily.",
   "author": "NOuSantx <nousantx@gmail.com>",
   "license": "MIT",
@@ -15,9 +15,9 @@
     "package.json"
   ],
   "types": "./dist/index.d.ts",
-  "main": "./dist/index.min.cjs",
-  "module": "./dist/index.esm.min.js",
-  "browser": "./dist/index.umd.min.js",
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.esm.js",
+  "browser": "./dist/index.umd.js",
   "bin": {
     "generate-color": "dist/cli.min.js"
   },
