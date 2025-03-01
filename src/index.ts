@@ -162,15 +162,3 @@ export default {
   rgbToLab,
   rgbToLch
 }
-
-
-// i am seeing this kind of object a lot, like in vite plugin, rollup plugin, or even tailwind plugin.
-
-export default {
-  plugins: [{
-    addUtilities: (class)  => ({
-      return class
-    })
-  }]
-}
-
