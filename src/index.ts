@@ -24,25 +24,42 @@ function formatColor(hsl: HSL, format: ColorFormat, opacityPrefix: string = ''):
   const rgb = hslToRgb(h, s, l)
   const opacityVar = opacityPrefix ? ` / var(--${opacityPrefix}-opacity)` : ''
 
+  // Define a helper function to extract values for *-value formats
+  const extractValues = (str: string) => str.match(/[\d.]+%?/g)?.join(' ') || ''
+
   switch (format) {
     case 'rgb':
       return `rgb(${rgb[0]} ${rgb[1]} ${rgb[2]}${opacityVar})`
-    case 'rgb-only':
-      return `${rgb[0]} ${rgb[1]} ${rgb[2]}`
+    case 'rgb-value':
+      return extractValues(`rgb(${rgb[0]} ${rgb[1]} ${rgb[2]})`)
     case 'hsl':
       return `hsl(${Math.round(h)} ${Math.round(s)}% ${l.toFixed(1)}%${opacityVar})`
+    case 'hsl-value':
+      return extractValues(`hsl(${Math.round(h)} ${Math.round(s)}% ${l.toFixed(1)}%)`)
     case 'hwb':
+    case 'hwb-value': {
       const [hw, w, b] = rgbToHwb(...rgb)
-      return `hwb(${Math.round(hw)} ${Math.round(w)}% ${Math.round(b)}%${opacityVar})`
+      const result = `hwb(${Math.round(hw)} ${Math.round(w)}% ${Math.round(b)}%)`
+      return format === 'hwb-value' ? extractValues(result) : result
+    }
     case 'lab':
+    case 'lab-value': {
       const [L2, a, b2] = rgbToLab(...rgb)
-      return `lab(${L2.toFixed(1)}% ${a.toFixed(1)} ${b2.toFixed(1)}${opacityVar})`
+      const result = `lab(${L2.toFixed(1)}% ${a.toFixed(1)} ${b2.toFixed(1)})`
+      return format === 'lab-value' ? extractValues(result) : result
+    }
     case 'lch':
+    case 'lch-value': {
       const [L3, C2, H2] = rgbToLch(...rgb)
-      return `lch(${L3.toFixed(1)}% ${C2.toFixed(1)} ${H2.toFixed(1)}${opacityVar})`
+      const result = `lch(${L3.toFixed(1)}% ${C2.toFixed(1)} ${H2.toFixed(1)})`
+      return format === 'lch-value' ? extractValues(result) : result
+    }
     case 'oklch':
+    case 'oklch-value': {
       const [L, C, H] = rgbToOklch(...rgb)
-      return `oklch(${L.toFixed(1)}% ${C.toFixed(3)} ${H.toFixed(1)}${opacityVar})`
+      const result = `oklch(${L.toFixed(1)}% ${C.toFixed(3)} ${H.toFixed(1)})`
+      return format === 'oklch-value' ? extractValues(result) : result
+    }
     case 'hex':
     default:
       return rgbToHex(rgb)
@@ -145,3 +162,15 @@ export default {
   rgbToLab,
   rgbToLch
 }
+
+
+// i am seeing this kind of object a lot, like in vite plugin, rollup plugin, or even tailwind plugin.
+
+export default {
+  plugins: [{
+    addUtilities: (class)  => ({
+      return class
+    })
+  }]
+}
+

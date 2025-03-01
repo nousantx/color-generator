@@ -7,7 +7,20 @@ export type XYZ = [number, number, number]
 export type OKLAB = [number, number, number]
 export type OKLCH = [number, number, number]
 
-export type ColorFormat = 'hsl' | 'rgb' | 'rgb-only' | 'hwb' | 'lab' | 'lch' | 'oklch' | 'hex'
+export type ColorFormat =
+  | 'hsl'
+  | 'hsl-value'
+  | 'rgb'
+  | 'rgb-value'
+  | 'hwb'
+  | 'hwb-value'
+  | 'lab'
+  | 'lab-value'
+  | 'lch'
+  | 'lch-value'
+  | 'oklch'
+  | 'oklch-value'
+  | 'hex'
 export type OutputFormat = 'css' | 'scss' | 'tailwind' | 'object' | 'object2' | 'array'
 
 export interface ColorOptions {
